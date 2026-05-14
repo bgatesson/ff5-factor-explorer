@@ -379,29 +379,27 @@ with tabs[6]:
     with st.expander('How was IVOL built?', expanded=False):
         st.markdown('**Step 1: Measure how volatile each stock is**')
         st.markdown(
-            'Every month, for each stock, we run a regression of its daily returns against '
-            'the three Fama-French factors (market, size, value). The part the model *cannot* '
-            'explain is the residual. IVOL is simply the standard deviation of those residuals: '
-            'a measure of how much each stock moves for reasons unrelated to broad market forces.'
+            'Each day, for each stock, we estimate the full FF5 model and collect the residuals. '
+            'IVOL is then the rolling standard deviation of those residuals over a trailing '
+            '21-day window (one trading month) — capturing how much a stock moves for reasons '
+            'the five factors cannot explain.'
         )
-        st.latex(r'r_t^i = \alpha^i + \beta^i_{MKT}\,MKT_t + \beta^i_{SMB}\,SMB_t + \beta^i_{HML}\,HML_t + \varepsilon^i_t')
-        st.latex(r'IVOL_i = \sqrt{\,\widehat{\mathrm{Var}}(\varepsilon^i_t)\,}')
-        st.markdown(
-            'We use FF3 (not FF5) to match the paper, keeping our numbers comparable to the literature.'
-        )
+        st.latex(r'r_t^i = \alpha^i + \beta^i_{MKT}\,MKT_t + \beta^i_{SMB}\,SMB_t + \beta^i_{HML}\,HML_t + \beta^i_{RMW}\,RMW_t + \beta^i_{CMA}\,CMA_t + \varepsilon^i_t')
+        st.latex(r'IVOL_{i,t} = \sqrt{\,\frac{1}{20}\sum_{\tau=t-20}^{t}\hat{\varepsilon}_{i,\tau}^{\,2}\,}')
 
         st.markdown('**Step 2: Build a long-short portfolio from those IVOL numbers**')
         st.markdown(
-            'At the end of each month we rank all stocks by IVOL and form a zero-cost portfolio:'
+            'At the end of each month we sort all stocks into quintiles by their IVOL from '
+            'the previous month (to avoid look-ahead bias) and form a zero-cost portfolio:'
         )
-        st.markdown('- **Long** the 20% with the *lowest* IVOL (calm, predictable stocks)\n'
-                    '- **Short** the 20% with the *highest* IVOL (erratic, hard-to-predict stocks)')
-        st.markdown('The daily return of this portfolio is the IVOL factor time series.')
+        st.markdown('- **Long** the bottom quintile (Q1) — the 20% with the *lowest* IVOL\n'
+                    '- **Short** the top quintile (Q5) — the 20% with the *highest* IVOL')
+        st.markdown('The daily return of this long-short portfolio is the IVOL factor time series.')
 
         st.markdown('**Step 3: Add the IVOL factor to the FF5 regression**')
         st.markdown(
-            'We add that factor as a sixth regressor. The `b_IVOL` coefficient tells you '
-            'how much a stock co-moves with high-volatility names.'
+            'We add that factor as a sixth regressor across all 503 stocks. '
+            'The `b_IVOL` coefficient tells you how much a stock co-moves with high-volatility names.'
         )
         st.latex(r'r_t^i = \alpha^i + \beta^i_{MKT}\,MKT_t + \beta^i_{SMB}\,SMB_t + \beta^i_{HML}\,HML_t + \beta^i_{RMW}\,RMW_t + \beta^i_{CMA}\,CMA_t + \beta^i_{IVOL}\,IVOL_t + \varepsilon^i_t')
 

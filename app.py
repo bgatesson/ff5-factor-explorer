@@ -381,7 +381,7 @@ with tabs[6]:
         st.markdown(
             'Each day, for each stock, we estimate the full FF5 model and collect the residuals. '
             'IVOL is then the rolling standard deviation of those residuals over a trailing '
-            '21-day window (one trading month) — capturing how much a stock moves for reasons '
+            '21-day window (one trading month): capturing how much a stock moves for reasons '
             'the five factors cannot explain.'
         )
         st.latex(r'r_t^i = \alpha^i + \beta^i_{MKT}\,MKT_t + \beta^i_{SMB}\,SMB_t + \beta^i_{HML}\,HML_t + \beta^i_{RMW}\,RMW_t + \beta^i_{CMA}\,CMA_t + \varepsilon^i_t')
@@ -392,8 +392,8 @@ with tabs[6]:
             'At the end of each month we sort all stocks into quintiles by their IVOL from '
             'the previous month (to avoid look-ahead bias) and form a zero-cost portfolio:'
         )
-        st.markdown('- **Long** the bottom quintile (Q1) — the 20% with the *lowest* IVOL\n'
-                    '- **Short** the top quintile (Q5) — the 20% with the *highest* IVOL')
+        st.markdown('- **Long** the bottom quintile (Q1): the 20% with the *lowest* IVOL\n'
+                    '- **Short** the top quintile (Q5): the 20% with the *highest* IVOL')
         st.markdown('The daily return of this long-short portfolio is the IVOL factor time series.')
 
         st.markdown('**Step 3: Add the IVOL factor to the FF5 regression**')
